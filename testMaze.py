@@ -55,3 +55,23 @@ print(laby)
 
 print("==========FIN TEST REMOVE WALL==========")
 print()
+
+print("==========DEBUT TEST EMPTY==========")
+print()
+
+laby.empty()
+laby.add_wall((0, 0), (0, 1))
+laby.add_wall((0, 1), (1, 1))
+print(laby)
+
+print("==========FIN TEST EMPTY==========")
+print()
+
+print("==========DEBUT TEST GET WALL==========")
+print()
+
+print(laby.get_walls())
+
+print()
+print("==========FIN TEST GET WALL==========")
+print()
