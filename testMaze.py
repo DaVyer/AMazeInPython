@@ -55,3 +55,43 @@ print(laby)
 
 print("==========FIN TEST REMOVE WALL==========")
 print()
+
+print()
+
+print("==========DEBUT TEST EMPTY==========")
+print()
+
+laby.empty()
+laby.add_wall((0, 0), (0, 1))
+laby.add_wall((0, 1), (1, 1))
+print(laby)
+
+print("==========FIN TEST EMPTY==========")
+print()
+
+print("==========DEBUT TEST GET WALL==========")
+print()
+
+print(laby.get_walls())
+
+print()
+print("==========FIN TEST GET WALL==========")
+print()
+
+print("==========DEBUT TEST CONTIGUOUS CELLS==========")
+print()
+
+print(laby.get_contiguous_cells((0,1)))
+
+print()
+print("==========FIN TEST CONTIGUOUS CELLS==========")
+print()
+
+print("==========DEBUT TEST REACHABLE CELLS==========")
+print()
+
+print(laby.get_reachable_cells((0,1)))
+
+print()
+print("==========FIN TEST REACHABLE CELLS==========")
+print()
