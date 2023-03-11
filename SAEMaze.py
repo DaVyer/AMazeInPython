@@ -87,7 +87,6 @@ class Maze:
         if c1 in self.neighbors[c2]:      # Si c3 est dans les voisines de c2
             self.neighbors[c2].remove(c1) # on le retire
     
-     
 
     def fill(self):
         """
@@ -103,6 +102,7 @@ class Maze:
         """
         self.neighbors = {(i,j): set() for i in range(self.height) for j in range (self.width)}               
         return None
+
 
     def remove_wall(self, c1, c2):
         """
@@ -134,6 +134,7 @@ class Maze:
         if c2 not in self.neighbors[c1]:      # Si c2 est dans les voisines de c1
             self.neighbors[c1].add(c2)        # on le retire
         return None
+
 
     def empty(self):
         """
@@ -179,6 +180,96 @@ class Maze:
             if c1[0] < self.height-1 and (c1[0]+1,c1[1]) not in self.neighbors[c1]:
                 mark.append((c1,(c1[0]+1,c1[1])))           
         return mark
+
+    def empty(self):
+        """
+        Cette fonction remplit le dictionnaire de voisins pour toutes les cellules de la grille.
+        Pour chaque cellule de la grille, la fonction ajoute tous les voisins possibles 
+        (cellules adjacentes) dans le dictionnaire de voisins de cette cellule.
+        
+        Paramètres: self (obj): L'instance de la classe contenant les attributs de grille à utiliser.
+
+        Variables: Aucune.
+            
+        Valeurs de retour: None: Cette fonction ne renvoie rien.
+        """
+        for i in range(self.height):
+                for j in range(self.width):
+                    if i > 0:
+                        self.neighbors[(i,j)].add(((i-1),j))
+                    if i < self.height - 1:
+                        self.neighbors[(i,j)].add(((i+1),j))
+                    if j > 0:
+                        self.neighbors[(i,j)].add((i,(j-1)))
+                    if j < self.width -1:
+                        self.neighbors[(i,j)].add((i,(j+1)))              
+        return None
+
+
+    def get_walls(self):
+        """
+        Cette fonction retourne une liste de tuples représentant les murs 
+        présents entre les cellules de la grille.
+
+        Paramètres: self (obj): l'instance de la classe contenant les attributs de grille à utiliser
+
+        Variables: Aucune.
+        
+        Valeurs de retour: Une liste de tuples(mark), chaque tuple représentant un mur entre deux cellules de la grille.
+        Les éléments de chaque tuple sont des tuples de coordonnées (i, j), où i est la ligne et j est la colonne.   
+        """
+        mark=[]
+        for c1 in self.neighbors.keys():
+            if c1[1] < self.width-1 and (c1[0],c1[1]+1) not in self.neighbors[c1]:
+                mark.append((c1,(c1[0],c1[1]+1)))
+            if c1[0] < self.height-1 and (c1[0]+1,c1[1]) not in self.neighbors[c1]:
+                mark.append((c1,(c1[0]+1,c1[1])))           
+        return mark
+
+    def get_contiguous_cells(self, c):
+        """
+        Cette fonction prend en entrée une coordonnée c et retourne une liste de coordonnées adjacentes à c 
+        dans une grille de dimensions self.height x self.width.
+
+        Paramètres: self (obj): l'instance de la classe contenant les attributs de grille à utiliser
+                    c: Une coordonnée dans la grille, sous la forme d'un tuple (x, y).
+
+        Variables: Aucune.
+
+        Valeurs de retour: La fonction retourne une liste de tuples 
+        représentant les coordonnées adjacentes à c dans la grille.
+        """
+        contigues =[]
+        if c[0] > 0:
+            contigues.append(((c[0]-1),c[1]))
+        if c[0] < self.height - 1:
+                contigues.append(((c[0]+1),c[1]))
+        if c[1] > 0:
+                contigues.append((c[0],(c[1]-1)))
+        if c[1] < self.width -1:
+                contigues.append((c[0],(c[1]+1)))
+        return contigues
+
+    def get_reachable_cells(self, c):
+        """
+        Cette fonction prend en entrée une coordonnée c et retourne une liste de coordonnées adjacentes à c 
+        dans une grille de dimensions self.height x self.width qui sont également accessibles à partir de c.
+
+        Paramètres: self (obj): l'instance de la classe contenant les attributs de grille à utiliser
+                    c: Une coordonnée dans la grille, sous la forme d'un tuple (x, y).
+
+        Variables: Aucune.
+
+        Valeurs de retour: La fonction retourne une liste de tuples représentant les coordonnées 
+        adjacentes à c dans la grille qui sont également accessibles à partir de c.
+        """
+        reachable=[]
+        for c1 in self.get_contiguous_cells(c):
+            if c1 in self.neighbors[c]:
+                reachable.append(c)
+        return reachable
+
+
     
         
 
