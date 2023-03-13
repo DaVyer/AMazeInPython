@@ -44,8 +44,8 @@ laby = Maze(4, 4, empty = True)
 laby.fill()
 print(laby)
 
-print("==========FIN TEST FILL==========")
 print()
+print("==========FIN TEST FILL==========")
 
 print("==========DEBUT TEST REMOVE WALL==========")
 print()
@@ -53,8 +53,9 @@ print()
 laby.remove_wall((0, 0), (0, 1))
 print(laby)
 
-print("==========FIN TEST REMOVE WALL==========")
 print()
+print("==========FIN TEST REMOVE WALL==========")
+
 
 print()
 
@@ -66,8 +67,9 @@ laby.add_wall((0, 0), (0, 1))
 laby.add_wall((0, 1), (1, 1))
 print(laby)
 
-print("==========FIN TEST EMPTY==========")
 print()
+print("==========FIN TEST EMPTY==========")
+
 
 print("==========DEBUT TEST GET WALL==========")
 print()
