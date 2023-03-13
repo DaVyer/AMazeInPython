@@ -135,52 +135,6 @@ class Maze:
             self.neighbors[c1].add(c2)        # on le retire
         return None
 
-
-    def empty(self):
-        """
-        Cette fonction remplit le dictionnaire de voisins pour toutes les cellules de la grille.
-        Pour chaque cellule de la grille, la fonction ajoute tous les voisins possibles 
-        (cellules adjacentes) dans le dictionnaire de voisins de cette cellule.
-        
-        Paramètres: self (obj): L'instance de la classe contenant les attributs de grille à utiliser.
-
-        Variables: Aucune.
-            
-        Valeurs de retour: None: Cette fonction ne renvoie rien.
-        """
-        for i in range(self.height):
-                for j in range(self.width):
-                    if i > 0:
-                        self.neighbors[(i,j)].add(((i-1),j))
-                    if i < self.height - 1:
-                        self.neighbors[(i,j)].add(((i+1),j))
-                    if j > 0:
-                        self.neighbors[(i,j)].add((i,(j-1)))
-                    if j < self.width -1:
-                        self.neighbors[(i,j)].add((i,(j+1)))              
-        return None
-
-
-    def get_walls(self):
-        """
-        Cette fonction retourne une liste de tuples représentant les murs 
-        présents entre les cellules de la grille.
-
-        Paramètres: self (obj): l'instance de la classe contenant les attributs de grille à utiliser
-
-        Variables: Aucune.
-        
-        Valeurs de retour: Une liste de tuples(mark), chaque tuple représentant un mur entre deux cellules de la grille.
-        Les éléments de chaque tuple sont des tuples de coordonnées (i, j), où i est la ligne et j est la colonne.   
-        """
-        mark=[]
-        for c1 in self.neighbors.keys():
-            if c1[1] < self.width-1 and (c1[0],c1[1]+1) not in self.neighbors[c1]:
-                mark.append((c1,(c1[0],c1[1]+1)))
-            if c1[0] < self.height-1 and (c1[0]+1,c1[1]) not in self.neighbors[c1]:
-                mark.append((c1,(c1[0]+1,c1[1])))           
-        return mark
-
     def empty(self):
         """
         Cette fonction remplit le dictionnaire de voisins pour toutes les cellules de la grille.
