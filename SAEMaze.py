@@ -87,7 +87,6 @@ class Maze:
         if c1 in self.neighbors[c2]:      # Si c3 est dans les voisines de c2
             self.neighbors[c2].remove(c1) # on le retire
     
-     
 
     def fill(self):
         """
@@ -103,6 +102,7 @@ class Maze:
         """
         self.neighbors = {(i,j): set() for i in range(self.height) for j in range (self.width)}               
         return None
+
 
     def remove_wall(self, c1, c2):
         """
@@ -179,6 +179,51 @@ class Maze:
             if c1[0] < self.height-1 and (c1[0]+1,c1[1]) not in self.neighbors[c1]:
                 mark.append((c1,(c1[0]+1,c1[1])))           
         return mark
+
+    def get_contiguous_cells(self, c):
+        """
+        Cette fonction prend en entrée une coordonnée c et retourne une liste de coordonnées adjacentes à c 
+        dans une grille de dimensions self.height x self.width.
+
+        Paramètres: self (obj): l'instance de la classe contenant les attributs de grille à utiliser
+                    c: Une coordonnée dans la grille, sous la forme d'un tuple (x, y).
+
+        Variables: Aucune.
+
+        Valeurs de retour: La fonction retourne une liste de tuples 
+        représentant les coordonnées adjacentes à c dans la grille.
+        """
+        contigues =[]
+        if c[0] > 0:
+            contigues.append(((c[0]-1),c[1]))
+        if c[0] < self.height - 1:
+                contigues.append(((c[0]+1),c[1]))
+        if c[1] > 0:
+                contigues.append((c[0],(c[1]-1)))
+        if c[1] < self.width -1:
+                contigues.append((c[0],(c[1]+1)))
+        return contigues
+
+    def get_reachable_cells(self, c):
+        """
+        Cette fonction prend en entrée une coordonnée c et retourne une liste de coordonnées adjacentes à c 
+        dans une grille de dimensions self.height x self.width qui sont également accessibles à partir de c.
+
+        Paramètres: self (obj): l'instance de la classe contenant les attributs de grille à utiliser
+                    c: Une coordonnée dans la grille, sous la forme d'un tuple (x, y).
+
+        Variables: Aucune.
+
+        Valeurs de retour: La fonction retourne une liste de tuples représentant les coordonnées 
+        adjacentes à c dans la grille qui sont également accessibles à partir de c.
+        """
+        reachable=[]
+        for c1 in self.get_contiguous_cells(c):
+            if c1 in self.neighbors[c]:
+                reachable.append(c)
+        return reachable
+
+
     
         
 
