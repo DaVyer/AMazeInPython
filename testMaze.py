@@ -117,3 +117,21 @@ print(laby)
 print()
 print("==========FIN TEST SIDEWINDER==========")
 print()
+
+print("==========DEBUT TEST GEN FUSION==========")
+print()
+
+laby = Maze.gen_fusion(15, 15)
+print(laby)
+
+print()
+print("==========FIN TEST GEN FUSION==========")
+
+print("==========DEBUT TEST GEN EXPLORATION==========")
+print()
+
+laby = Maze.gen_exploration(15, 15)
+print(laby)
+
+print()
+print("==========FIN TEST GEN EXPLORATION==========")

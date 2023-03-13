@@ -310,6 +310,102 @@ class Maze:
         #Retourner le labyrinthe
         return laby
 
+    @classmethod
+    def gen_fusion(cls, h, w):
+        """
+        Cette fonction génère un labyrinthe n utilisant l'algorithme de génération de labyrinthe par fusion.
+
+        Paramètres : h : Hauteur du labyrinthe.
+                    w: Largeur du labyrinthe.
+
+        Valeur de retour : La fonction retourne une instance de labyrinthe générée avec l'algorithme de fusion.
+
+        laby : un objet Labyrinth représentant le labyrinthe généré.
+        """
+        #Initialisation : création d’un labyrinthe plein
+        laby = cls(h, w, empty=False)
+
+        #on labélise les cellules de 1 à n
+        compteur = 1
+        labelle_cellule = {}
+        for i in laby.neighbors.keys():
+            labelle_cellule[i] = compteur
+            compteur+=1
+
+        #on extrait la liste de tous les murs et on les « mélange » (on les permute aléatoirement)
+        walls = laby.get_walls()
+        shuffle(walls)
+
+        #Si les deux cellules séparées par le mur n’ont pas le même label :
+        for tupleWall in walls:
+            if labelle_cellule[tupleWall[0]] != labelle_cellule[tupleWall[1]]:
+                laby.remove_wall(tupleWall[0], tupleWall[1])
+                
+                #affecter le label de l’une des deux cellules, à l’autre, et à toutes celles qui ont le même label que la deuxième
+                sameLabel = []
+                for cell in labelle_cellule.keys():
+                    if labelle_cellule[cell] == labelle_cellule[tupleWall[1]]:
+                        sameLabel.append(cell)
+                for cell in sameLabel:
+                    labelle_cellule[cell] = labelle_cellule[tupleWall[0]]               
+
+        return laby
+
+    @classmethod
+    def gen_exploration(cls, h, w):
+        """
+        Cette fonction génère un labyrinthe en utilisant l’algorithme d’exploration exhaustive
+
+        Paramètres: h : Hauteur du labyrinthe.
+                    w: Largeur du labyrinthe.
+
+        Valeur de retour : La fonction retourne une instance de labyrinthe générée avec l'algorithme d’exploration exhaustive.
+        """
+        #Initialisation : création d’un labyrinthe plein
+        laby = cls(h, w, empty=False)
+
+        #Choisir une cellule au hasard
+        randomCell = choice(list(laby.neighbors.keys()))
+
+        #Marquer cette cellule comme étant visitée
+        estVisiter = [randomCell]
+
+        #Mettre cette cellule sur une pile
+        pile = [randomCell]
+
+        #Tant que la pile n’est pas vide :
+        while len(pile) != 0: 
+
+            #Prendre la cellule en haut de la pile et l’en retirer
+            currentCell = pile[0]
+            del pile[0]
+
+            #Prendre les cellules contigues de la cellule actuelle et si elle sont pas visitées, les mettres dans une liste.
+            notVisited = []
+            for cell in laby.get_contiguous_cells(currentCell):
+                if cell not in estVisiter:
+                    notVisited.append(cell)
+            
+            #Si cette cellule a des voisins qui n’ont pas encore été visités :
+            if notVisited:
+
+                #La remettre sur la pile
+                pile.insert(0, currentCell)
+
+                #Choisir au hasard l’une de ses cellules contigües qui n’a pas été visitée
+                contiguousNotVisited = choice(notVisited)
+
+                #Casser le mur entre la cellule (celle qui a été dépilée) et celle qui vient d’être choisie
+                laby.remove_wall(currentCell, contiguousNotVisited)
+                laby.remove_wall(contiguousNotVisited, currentCell)
+
+                #Marquer la cellule qui vient d’être choisie comme visitée et la mettre sur la pile
+                estVisiter.append(contiguousNotVisited)
+                pile.insert(0, contiguousNotVisited)
+
+
+        return laby
+
 
     
 
