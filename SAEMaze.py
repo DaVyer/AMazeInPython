@@ -135,6 +135,7 @@ class Maze:
             self.neighbors[c1].add(c2)        # on le retire
         return None
 
+
     def empty(self):
         """
         Cette fonction remplit le dictionnaire de voisins pour toutes les cellules de la grille.
@@ -193,15 +194,15 @@ class Maze:
         Valeurs de retour: La fonction retourne une liste de tuples 
         représentant les coordonnées adjacentes à c dans la grille.
         """
-        contigues =[]
-        if c[0] > 0:
-            contigues.append(((c[0]-1),c[1]))
-        if c[0] < self.height - 1:
-                contigues.append(((c[0]+1),c[1]))
-        if c[1] > 0:
-                contigues.append((c[0],(c[1]-1)))
-        if c[1] < self.width -1:
-                contigues.append((c[0],(c[1]+1)))
+        contigues = []
+        if c[0]-1 >= 0:
+            contigues.append((c[0]-1, c[1]))
+        if c[0]+1 < self.height:
+                contigues.append((c[0]+1, c[1]))
+        if c[1]-1 >= 0:
+                contigues.append((c[0], c[1]-1))
+        if c[1]+1 < self.width:
+                contigues.append((c[0], c[1]+1))
         return contigues
 
     def get_reachable_cells(self, c):
@@ -222,6 +223,95 @@ class Maze:
             if c1 in self.neighbors[c]:
                 reachable.append(c)
         return reachable
+
+
+    @classmethod
+    def gen_btree(cls, h, w):
+        """
+        Cette fonction génère un labyrinthe en utilisant l'algorithme de l'arbre binaire.
+
+        Paramètres: h : Hauteur du labyrinthe.
+                    w: Largeur du labyrinthe.
+        
+        Variables: Aucune.
+
+        Valeurs de retour: La fonction retourne une instance de labyrinthe générée avec l'algorithme de l'arbre binaire.
+        """
+        #Initialisation : un labyrinthe plein (contenant tous les murs possibles) Pour chaque cellule du labyrinthe :
+        #Supprimer aléatoirement le mur EST ou le mur SUD (s’il n’en possède qu’un, supprimer ce mur ; s’il n’en possède aucun des deux, ne rien faire)
+        laby = cls(h, w, empty=False)
+        for i in range(h-1):
+            for j in range(w-1):
+                res = randint(0,1)
+                #supprime le mur EST si on est pas sur la derniere colonne
+                if res == 0 and i < h-1:
+                    laby.remove_wall((i,j),(i+1,j))
+                #supprime le mur SUD si on est pas sur la derniere ligne
+                elif res == 1 and j < w-1:
+                    laby.remove_wall((i,j),(i,j+1))
+                else:
+                    continue
+        for x in range(0, w):
+            if x+1 < w:
+                laby.remove_wall((x, w-1), (x+1, w-1))
+        for y in range(0, h):
+            if y+1 < h :
+                laby.remove_wall((h-1, y), (h-1, y+1))
+        return laby
+
+    @classmethod
+    def gen_sidewinder(cls, h, w):
+        """
+        Cette fonction génère un labyrinthe en utilisant l'algorithme Sidewinder.
+
+        Paramètres: h : Hauteur du labyrinthe.
+                    w: Largeur du labyrinthe.
+
+        Valeurs de retour: La fonction retourne une instance de labyrinthe générée avec l'algorithme Sidewinder.
+        """
+        #Initialisation : création d’un labyrinthe plein
+        laby = cls(h, w, empty=False)
+        #Pour i allant de 0 à hauteur-2 :
+        for i in range(h-1):
+            #Initialiser une variable séquence comme liste vide
+            sequence=[]
+            #Pour j allant de 0 à largeur-2 :
+            for j in range(w-1):
+                #Ajouter la cellule (i, j) à la séquence
+                sequence.append((i,j))
+
+                #Tirer à pile ou face :
+                res = randint(0,1)
+
+                #Si c’est pile : Casser le mur EST de la cellule (i, j)
+                if res == 0:
+                    laby.remove_wall((i,j),(i,j+1))
+
+                 #Si c’est face :
+                else:
+                    #Casser le mur SUD d’une des cellules (choisie au hasard) qui constituent le séquence qui vient d’être terminée.
+                    cell = choice(sequence)
+                    laby.remove_wall((cell[0], cell[1]), (cell[0]+1, cell[1]))
+
+                    #Réinitialiser la séquence à une liste vide
+                    sequence = []
+
+            #Ajouter la dernière cellule à la séquence
+            sequence.append((i, w-1))
+
+            #Tirer une cellule au sort dans la séquence et casser son mur SUD
+            randCell = choice(sequence)
+            laby.remove_wall((randCell[0], randCell[1]), (randCell[0]+1, randCell[1]))
+
+        #Casser tous les murs EST de la dernière ligne
+        for y in range(0, h):
+            if y+1 < h :
+                laby.remove_wall((h-1, y), (h-1, y+1))
+        #Retourner le labyrinthe
+        return laby
+
+
+    
 
 
     

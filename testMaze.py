@@ -97,3 +97,23 @@ print(laby.get_reachable_cells((0,1)))
 print()
 print("==========FIN TEST REACHABLE CELLS==========")
 print()
+
+print("==========DEBUT TEST GEN BTREE==========")
+print()
+
+laby = Maze.gen_btree(4,4)
+print(laby)
+
+print()
+print("==========FIN TEST GEN BTREE==========")
+print()
+
+print("==========DEBUT TEST SIDEWINDER==========")
+print()
+
+laby = Maze.gen_sidewinder(4, 4)
+print(laby)
+
+print()
+print("==========FIN TEST SIDEWINDER==========")
+print()
