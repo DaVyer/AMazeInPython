@@ -132,7 +132,8 @@ class Maze:
             0 <= c2[1] < self.width, \
             f"Erreur lors de la suppression d'un mur entre {c1} et {c2} : les coordonnées de sont pas compatibles avec les dimensions du labyrinthe"
         if c2 not in self.neighbors[c1]:      # Si c2 est dans les voisines de c1
-            self.neighbors[c1].add(c2)        # on le retire
+            self.neighbors[c1].add(c2)
+            self.neighbors[c2].add(c1)         # on le retire
         return None
 
 
@@ -221,8 +222,17 @@ class Maze:
         reachable=[]
         for c1 in self.get_contiguous_cells(c):
             if c1 in self.neighbors[c]:
-                reachable.append(c)
+                reachable.append(c1)
         return reachable
+
+    def get_cells(self):
+        cells = []
+
+        for i in range(0, self.height):
+            for j in range(0, self.width):
+                cells.append((i, j))
+        
+        return cells
 
 
     @classmethod
@@ -403,14 +413,187 @@ class Maze:
                 estVisiter.append(contiguousNotVisited)
                 pile.insert(0, contiguousNotVisited)
 
-
         return laby
 
+    @classmethod
+    def gen_wilson(cls, h, w):
+        """
+        Cette fonction génère un labyrinthe en utilisant l’algorithme de Wilson
 
+        Paramètres: h : Hauteur du labyrinthe.
+                    w: Largeur du labyrinthe.
+
+        Valeur de retour : La fonction retourne une instance de labyrinthe générée avec l'algorithme de Wilson.
+        """
+        #Initialisation : création d’un labyrinthe plein
+        laby = cls(h, w, empty=False)
+        #Choisir une cellule au hasard sur la grille et la marquer
+        randomCell = choice(laby.get_cells())
+        mark = {randomCell}
+        #Tant qu’il reste des cellules non marquées :
+        while len(mark) != len(laby.get_cells()):
+            #Choisir une cellule de départ au hasard, parmi les cellules non marquées
+            startCell = choice(list(set(laby.get_cells()) - mark))
+            #Effectuer une marche aléatoire jusqu’à ce qu’une cellule marquée soit atteinte
+            path = [startCell]
+            while startCell not in mark:
+                startCell = choice(laby.get_contiguous_cells(startCell))
+                if startCell in path:
+                    path = path[:path.index(startCell)+1]
+                else:
+                    path.append(startCell)
+            #Marquer chaque cellule du chemin, et casser tous les murs rencontrés, jusqu’à la cellule marquée
+            for j in range(len(path)-1):
+                laby.remove_wall(path[j], path[j+1])
+            mark.update(path)
+        return laby
+
+    def overlay(self, content=None):
+        """
+        Rendu en mode texte, sur la sortie standard, 
+        d'un labyrinthe avec du contenu dans les cellules
+        Argument:
+            content (dict) : dictionnaire tq content[cell] contient le caractère à afficher au milieu de la cellule
+        Retour:
+            string
+        """
+        if content is None:
+            content = {(i,j):' ' for i in range(self.height) for j in range(self.width)}
+        else:
+            # Python >=3.9
+            #content = content | {(i, j): ' ' for i in range(
+            #    self.height) for j in range(self.width) if (i,j) not in content}
+            # Python <3.9
+            new_content = {(i, j): ' ' for i in range(self.height) for j in range(self.width) if (i,j) not in content}
+            content = {**content, **new_content}
+        txt = r""
+        # Première ligne
+        txt += "┏"
+        for j in range(self.width-1):
+            txt += "━━━┳"
+        txt += "━━━┓\n"
+        txt += "┃"
+        for j in range(self.width-1):
+            txt += " "+content[(0,j)]+" ┃" if (0,j+1) not in self.neighbors[(0,j)] else " "+content[(0,j)]+"  "
+        txt += " "+content[(0,self.width-1)]+" ┃\n"
+        # Lignes normales
+        for i in range(self.height-1):
+            txt += "┣"
+            for j in range(self.width-1):
+                txt += "━━━╋" if (i+1,j) not in self.neighbors[(i,j)] else "   ╋"
+            txt += "━━━┫\n" if (i+1,self.width-1) not in self.neighbors[(i,self.width-1)] else "   ┫\n"
+            txt += "┃"
+            for j in range(self.width):
+                txt += " "+content[(i+1,j)]+" ┃" if (i+1,j+1) not in self.neighbors[(i+1,j)] else " "+content[(i+1,j)]+"  "
+            txt += "\n"
+        # Bas du tableau
+        txt += "┗"
+        for i in range(self.width-1):
+            txt += "━━━┻"
+        txt += "━━━┛\n"
+        return txt
+
+    def solve_dfs(self, start, stop):
+        """
+        Cette fonction renvoie le chemin reliant deux cellules du labyrinthe en utilisant l'algorithme de parcours en profondeur DFS.
+
+        Paramètres: self (Labyrinth): Instance du labyrinthe.
+                    start (tuple): Coordonnées de la cellule de départ.
+                    stop (tuple): Coordonnées de la cellule d'arrivée.
+
+        Valeur de retour : pathCell (list): La liste de coordonnées représentant le chemin entre les deux cellules.
+        """
+        #Placer D dans la struture d’attente (file ou pile) et marquer D
+        pile=[start]
+        mark=[start]
+        #Mémoriser l’élément prédécesseur de D comme étant D
+        pred={start : start}
+        nbCell = len(self.get_cells())
+        #Tant qu’il reste des cellules non-marquées :
+        while len(mark) != nbCell:
+            #Prendre la « première » cellule et la retirer de la structure (appelons c, cette cellule)
+            cell = pile.pop()
+            #Si c correspond à A :
+            if cell == stop:
+                #C’est terminé, on a trouvé un chemin vers la cellule de destination
+                break
+            #Sinon
+            else:
+                #Pour chaque voisine de c :
+                for neighbor in self.get_reachable_cells(cell):
+                    #Si elle n’est pas marquée :
+                    if neighbor not in mark:
+                        #La marquer
+                        mark.append(neighbor)
+                        #La mettre dans la structure d’attente
+                        pile.append(neighbor)
+                        #Mémoriser son prédécesseur comme étant c
+                        pred[neighbor] = cell
+        # Reconstruction du chemin à partir des prédécesseurs
+        pathCell = []
+        #Initialiser c à A
+        cell = stop
+        #Tant que c n’est pas D :
+        while cell != start:
+            #ajouter c au chemin
+            pathCell.append(cell)
+            #mettre le prédécesseur de c dans c
+            cell = pred[cell]
+        #Ajouter D au chemin
+        pathCell.append(start)
+        return pathCell
+
+    def solve_bfs(self,start, stop):
+        """
+        Cette fonction renvoie le chemin reliant deux cellules du labyrinthe en utilisant l'algorithme de parcours en largeur BFS.
+
+        Paramètres: self (Labyrinth): Instance du labyrinthe.
+                    start (tuple): Coordonnées de la cellule de départ.
+                    stop (tuple): Coordonnées de la cellule d'arrivée.
+
+        Valeur de retour : pathCell (list): La liste de coordonnées représentant le chemin entre les deux cellules.
+        """
+        #Placer D dans la struture d’attente (file ou pile) et marquer D
+        pile=[start]
+        mark=[start]
+        #Mémoriser l’élément prédécesseur de D comme étant D
+        pred={start : start}
+        nbCell = len(self.get_cells())
+        #Tant qu’il reste des cellules non-marquées :
+        while len(mark) != nbCell:
+            #Prendre la « première » cellule et la retirer de la structure (appelons c, cette cellule)
+            cell = pile.pop()
+            #Si c correspond à A :
+            if cell == stop:
+                #C’est terminé, on a trouvé un chemin vers la cellule de destination
+                break
+            #Sinon
+            else:
+                #Pour chaque voisine de c :
+                for neighbor in self.get_reachable_cells(cell):
+                    #Si elle n’est pas marquée :
+                    if neighbor not in mark:
+                        #La marquer
+                        mark.append(neighbor)
+                        #La mettre dans la structure d’attente
+                        pile.append(neighbor)
+                        #Mémoriser son prédécesseur comme étant c
+                        pred[neighbor] = cell
+
+        # Reconstruction du chemin à partir des prédécesseurs
+        pathCell = []
+        #Initialiser c à A
+        cell = stop
+        #Tant que c n’est pas D :
+        while cell != start:
+            #ajouter c au chemin
+            pathCell.append(cell)
+            #mettre le prédécesseur de c dans c
+            cell = pred[cell]
+        #Ajouter D au chemin
+        pathCell.append(start)
+        return pathCell
+    
     
 
-
     
-        
-
-
