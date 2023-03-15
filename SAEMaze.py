@@ -594,6 +594,93 @@ class Maze:
         pathCell.append(start)
         return pathCell
     
-    
+    #Pour l'algorithme de la main droite, voilà jusqu'ou je suis arrivé, j'arrive à récupéré chaque cellule de droite puis d'en bas etc... mais en cas de cul-de-sac je ne vois pas
+    #comment retourner en arrière. J'avais bien comme idée de créer une liste pointage et à chaque fois qu'on arrivait à un carrefour, rajouter la cellule à la liste et en cas de 
+    #cul-de-sac revenir sur ce pointage et condamné le chemin emprunté, mais je ne vois pas comment l'implémenter.
 
+    """
+    def solve_rhr(self, start, stop):
+        #initialiser le chemin à start
+        chemin = [start]
+        culDeSac = []
+        cell = chemin[0]
+        marquee = [cell]
+        pointage = []
+        while len(chemin) != len(self.get_cells()):
+        for i in range(20):
+            c = self.get_coord(cell)
+            if self.get_reachable_cells(cell) not in culDeSac:
+                if len(self.get_reachable_cells(cell)) >= 2:
+                        pointage.append(cell)
+
+                if (c[0], c[1]-1) in self.get_reachable_cells(cell) and (c[0], c[1]-1) not in culDeSac and (c[0], c[1]-1) not in marquee: #Pour aller sur la case de gauche
+                    cell = (c[0], c[1]-1)
+                    marquee.append(cell)
+                    
+                    print("je passe dans le premier", marquee, cell)
+
+                elif (c[0]+1, c[1]) in self.get_reachable_cells(cell) and (c[0]+1, c[1]) not in culDeSac and (c[0]+1, c[1]) not in marquee: #Pour aller sur la case d'en bas
+                    
+                    cell = (c[0]+1, c[1])
+                    marquee.append(cell)
+                    print("je passe dans le deuxième", marquee, cell, pointage)
+
+                elif (c[0], c[1]+1) in self.get_reachable_cells(cell) and (c[0], c[1]+1) not in culDeSac and (c[0], c[1]+1) not in marquee: #Pour aller sur la case de droite
+                    
+                    cell = (c[0], c[1]+1)
+                    marquee.append(cell)
+                    print("je passe dans le troisième", marquee, cell)
+
+                elif (c[0]-1, c[1]) in self.get_reachable_cells(cell) and (c[0]-1, c[1]) not in culDeSac and (c[0]-1, c[1]) not in marquee: #Pour aller sur la case en haut
+                    
+                    cell = (c[0]-1, c[1])
+                    marquee.append(cell)
+                    print("je passe dans le quatrième", marquee, cell)
+
+            else:
+                culDeSac+=marquee
+                while marquee[:-1] != pointage[:-1]:
+                    
+                    print(marquee.pop())
+                    marquee.pop()
+                    pointage.pop()
+                print("je passe dans le else", marquee, len(marquee)-1, cell, culDeSac, pointage)
+        print(marquee, ",",culDeSac)
+        chemin += marquee    
+        return chemin
+    """                
+
+    def distance_geo(self, c1, c2):
+        """
+        Cette fonction calcule la distance géodésique entre deux cellules `c1` et `c2` dans le labyrinthe.
+        
+        Paramètres: self: l'instance de la classe Labyrinthe
+                    c1 (tuple): les coordonnées de la première cellule
+                    c2 (tuple): les coordonnées de la deuxième cellule
+            
+        Valeur de retour :  str : une chaîne de caractères décrivant la distance géodésique entre `c1` et `c2`.
+                            La distance géodésique est calculée en utilisant l'algorithme de parcours en profondeur
+                            pour trouver le chemin le plus court entre `c1` et `c2`.
+        """
+        distGeo = len(self.solve_dfs(c1, c2))
+        res = f"La distance Géodésique du labyrinthe est : {distGeo}"
+        return res
+
+    def distance_man(self, c1, c2):
+        """
+        Cette fonction calcule la distance de Manhattan entre deux cellules dans le labyrinthe.
+
+        Paramètres: self: instance de la classe Labyrinthe
+                    c1 (tuple): coordonnées (x, y) de la première cellule
+                    c2 (tuple): coordonnées (x, y) de la seconde cellule
+
+        Valeur de retour : res (str): la distance de Manhattan du labyrinthe entre les deux cellules données `c1` et `c2`.
+        """
+        #Calcul des distances horizontale et verticale séparant c1 et c2
+        distHori = abs(c1[0] - c2[0])
+        distVerti = abs(c1[1] - c2[1])
+        # Calcul de la distance de Manhattan en additionnant les distances horizontale et verticale
+        distMan = distHori + distVerti 
+        res = f"La distance de Manhattan du labyrinthe est : {distMan}"
+        return res
     

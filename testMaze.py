@@ -1,6 +1,6 @@
 from SAEMaze import Maze
 
-"""
+
 laby = Maze(4, 4, True)
 print(laby.info())
 print(laby)
@@ -183,7 +183,7 @@ laby = Maze.gen_fusion(15, 15)
 solution = laby.solve_dfs((0, 0), (14, 14))
 str_solution = {c:'*' for c in solution}
 str_solution[( 0,  0)] = 'D'
-str_solution[(6, 6)] = 'A'
+str_solution[(14, 14)] = 'A'
 print(laby.overlay(str_solution))
 
 print()
@@ -203,7 +203,32 @@ print(laby.overlay(str_solution))
 print()
 print("==========FIN RESOLUTION BFS==========")
 print()
-"""
+
+print("==========DEBUT RESOLUTION MAIN DROITE==========")
+print()
+
+print("SKIPPED")
+#laby = Maze.gen_exploration(15, 15)
+#solution = laby.solve_rhr((0, 0), (14, 14))
+str_solution = {c:'*' for c in solution}
+str_solution[( 0,  0)] = 'D'
+str_solution[(14, 14)] = 'A'
+#print(laby.overlay(str_solution))
+
+print()
+print("==========FIN RESOLUTION MAIN DROITE==========")
+print()
+
+
+print("==========DEBUT EVALUATION==========")
+print()
+
+print(laby.distance_geo((0,0), (14,14))) 
+print(laby.distance_man((0,0), (14,14)))
+
+print()
+print("==========FIN EVALUATION==========")
+print()
 
 
 
