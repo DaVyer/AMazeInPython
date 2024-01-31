@@ -226,6 +226,9 @@ print()
 print(laby.distance_geo((0,0), (14,14))) 
 print(laby.distance_man((0,0), (14,14)))
 
+test = Maze.gen_wilson(15, 15)
+print(test)
+
 print()
 print("==========FIN EVALUATION==========")
 print()

@@ -446,6 +446,7 @@ class Maze:
             for j in range(len(path)-1):
                 laby.remove_wall(path[j], path[j+1])
             mark.update(path)
+        print(laby)
         return laby
 
     def overlay(self, content=None):
